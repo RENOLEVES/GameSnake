@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 public class SnakeFrame extends Frame {
     static final int GAME_WIDTH = 500, GAME_HEIGHT = 500;
 
+    Snake snake = new Snake(50,50,Dir.DOWN);
     Dimension ScreenSize = getToolkit().getScreenSize();
     int ScreenWidth = (int) ScreenSize.getWidth();
     int ScreenHeight = (int) ScreenSize.getHeight();
@@ -72,26 +73,36 @@ public class SnakeFrame extends Frame {
         }
     }
 
+    public void paint(Graphics g){
 
+        snake.paint(g);
+    }
 }
 
 enum Dir{UP,DOWN,LEFT,RIGHT}
 
 class Snake{
-    int x,y;
-    static final int WIDTH = 20, HEIGHT = 20;
+    int x,y=50;
+    static final int WIDTH = 30, HEIGHT = 30;
     Dir dir = Dir.RIGHT;
     Rectangle rect = new Rectangle();
 
-    public Snake(int x, int y, Dir dir, Rectangle rect) {
+    public Snake(int x,int y, Dir dir) {
         this.x = x;
         this.y = y;
         this.dir = dir;
-        this.rect = rect;
+//        this.rect = rect;
+//
+//        rect.x = x;
+//        rect.y = y;
+//        rect.width = WIDTH;
+//        rect.height = HEIGHT;
+    }
 
-        rect.x = x;
-        rect.y = y;
-        rect.width = WIDTH;
-        rect.height = HEIGHT;
+    public void paint(Graphics g){
+        Color c = g.getColor();
+        g.setColor(Color.BLACK);
+        g.setColor(c);
+        g.fillOval(x,y,WIDTH,HEIGHT);
     }
 }
