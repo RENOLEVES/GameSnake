@@ -12,8 +12,8 @@ public class SnakeFrame extends Frame {
     static final int GAME_WIDTH = 500, GAME_HEIGHT = 500;
 
     Snake snake = new Snake(50, 50, Dir.DOWN);
-
     List<Food> food = new ArrayList<Food>();
+
     Dimension ScreenSize = getToolkit().getScreenSize();
     int ScreenWidth = (int) ScreenSize.getWidth();
     int ScreenHeight = (int) ScreenSize.getHeight();
@@ -97,14 +97,13 @@ public class SnakeFrame extends Frame {
     }
 
     public void paint(Graphics g) {
-
         snake.paint(g);
-
-        for(int i= 0;i<food.size();i++){
+        if (food.size() == 0) food.add(new Food(100, 100, this));
+        for (int i = 0; i < food.size(); i++) {
             food.get(i).paint(g);
         }
 
-        for(int i= 0;i<food.size();i++){
+        for (int i = 0; i < food.size(); i++) {
             food.get(i).collidewith(snake);
         }
     }
@@ -132,9 +131,8 @@ class Snake {
     }
 
     public static final int WIDTH = 30, HEIGHT = 30;
-    private static final int SPEED = 10;
+    private static final int SPEED = 5;
     Dir dir = Dir.RIGHT;
-    Rectangle rect = new Rectangle();
 
     private boolean moving = false;
 
@@ -175,6 +173,9 @@ class Snake {
                 x += SPEED;
                 break;
         }
+
+        boundscheck();
+
     }
 
     public void paint(Graphics g) {
@@ -185,18 +186,34 @@ class Snake {
 
         move();
     }
+
+    public void boundscheck() {
+        if (x < 0) x = 0;
+        if (y < 22) y = 22;
+        if (x > SnakeFrame.GAME_WIDTH-Snake.WIDTH)
+            x = SnakeFrame.GAME_WIDTH -  Snake.WIDTH;
+        if (y > SnakeFrame.GAME_HEIGHT - Snake.HEIGHT)
+            y = SnakeFrame.GAME_HEIGHT - Snake.HEIGHT;
+
+    }
+
+
+
+
+
+
 }
 
 class Food {
     Random random = new Random();
     private int x;
     private int y;
-    private final int  WIDTH=20 ,HEIGHT = 20;
+    private final int WIDTH = 20, HEIGHT = 20;
     private boolean exist = true;
     SnakeFrame sf;
 
 
-    public Food(int x, int y,SnakeFrame sf) {
+    public Food(int x, int y, SnakeFrame sf) {
         this.x = x;
         this.y = y;
         this.sf = sf;
@@ -206,25 +223,27 @@ class Food {
 
 
     private void spawn() {
-        if (!exist) {
+        if (!exist && sf.food.size() == 0) {
             int r1 = random.nextInt(500);
             int r2 = random.nextInt(500);
             x = r1;
             y = r2;
-        } 
+
+            new Food(x, y, sf);
+            exist = true;
+        } else return;
     }
 
     public void paint(Graphics g) {
 
         if (!exist) {
             sf.food.remove(this);
-            System.out.printf("陈工");
         }
 
         Color c = g.getColor();
-        g.setColor(Color.YELLOW);
-        g.setColor(c);
+        g.setColor(Color.BLUE);
         g.fillOval(x, y, WIDTH, HEIGHT);
+        g.setColor(c);
 
         spawn();
     }
@@ -232,9 +251,9 @@ class Food {
     public void collidewith(Snake snake) {
 
         //TODO:用一个rect来记录food的位置
-        Rectangle rect1 = new Rectangle(x,y,WIDTH,HEIGHT);
-        Rectangle rect2 = new Rectangle(snake.getX(),snake.getY(),snake.getWIDTH(),snake.getHEIGHT());
-        if(rect1.intersects(rect2)){
+        Rectangle rect1 = new Rectangle(x, y, WIDTH, HEIGHT);
+        Rectangle rect2 = new Rectangle(snake.getX(), snake.getY(), snake.getWIDTH(), snake.getHEIGHT());
+        if (rect1.intersects(rect2)) {
             this.die();
         }
     }
